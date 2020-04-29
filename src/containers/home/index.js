@@ -6,7 +6,7 @@ const {Content} = Layout;
 class Home extends Component {
   render(){
     return(
-    <Layout className="layout">
+    <Layout className="layout"  style={{ height: '100%' }}>
       <Content>
         <h1 className='header'>Interview Test</h1>
         <div className="container">

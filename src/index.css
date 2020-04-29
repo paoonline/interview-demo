@@ -11,8 +11,23 @@ body {
     sans-serif;
   font-size: 1rem;
   line-height: 1.5;
+  height: '100%';
 }
 
 button:disabled {
   opacity: 0.5;
+}
+
+#root, .layout {
+  height: 100%;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+}
+
+.site-card-border-less-wrapper {
+  background: #ececec;
+  padding: 1px;
 }
