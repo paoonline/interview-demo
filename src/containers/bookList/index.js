@@ -11,14 +11,14 @@ import {
 
 const columns = [
 {
-    title: 'ชื่อ',
+    title: 'ชื่อหนังสือ',
     dataIndex: 'name',
     key: 'name',
 },
 {
     title: 'วันที่อ่านจบ',
-    dataIndex: 'timeRead',
-    key: 'timeRead',
+    dataIndex: 'dateReadEnd',
+    key: 'dateReadEnd',
 },
 {
     title: 'ชื่อคนเขียน',
@@ -27,8 +27,8 @@ const columns = [
 },
 {
     title: 'ระยะเวลาที่ให้ในการอ่าน(วัน)',
-    dataIndex: 'dateReadEnd',
-    key: 'dateReadEnd',
+    dataIndex: 'timeRead',
+    key: 'timeRead',
 },
 {
     title: 'ลบ',
@@ -43,8 +43,9 @@ class BookList extends Component {
         this.props.listBook()
     }
 
-    goToManageBook = () => {
-        this.props.history.push('/manage-read')
+    goToManageBook = (id) => {
+        let idEdit = id ? id : null 
+        this.props.history.push(`/manage-read?id=${idEdit}`)
     }
 
     handleDelete = (parms) => {
@@ -60,14 +61,15 @@ class BookList extends Component {
                     ...val,
                     key: i,
                     dateReadEnd: newDate,
-                    deleteListId: <Icon type="close" onClick={() => this.handleDelete(val)} style={{ color: 'red', cursor: 'pointer' }} />
+                    deleteListId: <Icon type="close" onClick={() => this.handleDelete(val)} style={{ color: 'red', cursor: 'pointer' }} />,
+                    name: <div className='pointer' onClick={() => this.goToManageBook(val.id)}>{val.name}</div>
                 }
             }
         ): []
         return(
             <div className='flex'>
                 <div className="site-card-border-less-wrapper">
-                    <Card title="Book List" bordered={false} extra={<div className='new' onClick={() => this.goToManageBook()}>NEW</div>}>
+                    <Card title="Book List" style={{width:'100%'}} bordered={false} extra={<div className='new' onClick={() => this.goToManageBook()}>NEW</div>}>
                         <Table dataSource={listBook} columns={columns} />
                     </Card>
                 </div>
