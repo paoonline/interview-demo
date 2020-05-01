@@ -9,7 +9,7 @@ import {
 } from 'antd';
 import './book.css'
 import { connect } from 'react-redux'
-import { BookReadAsync } from '../../modules/book'
+import { BookReadAsync, BookReadUpdateAsync } from '../../modules/book'
 import { withRouter } from 'react-router-dom'
 
  class ManageBook extends Component {
@@ -34,12 +34,28 @@ import { withRouter } from 'react-router-dom'
   }
 
   handleSubmit = e => {
+    const { book, Read, Update } = this.props
+    const { bookEdit } = this.state
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if(this.state.bookEdit){
-       
+    this.props.form.validateFields(async (err, values) => {
+      if(bookEdit){
+        let newBookList = await book.list.map(val => {
+          let newData = val
+          if(val.id === bookEdit.id){
+            newData = {
+              id: val.id,
+              timeRead: values.timeRead,
+              nameAuthor: values.nameAuthor,
+              name: values.name,
+              imageCover: values.imageCover.hasOwnProperty('fileList') ? values.imageCover.fileList : values.imageCover,
+              dateReadEnd: values.dateReadEnd
+            }
+          }
+          return newData
+        })
+        Update(newBookList)
       }else{
-        this.props.Read({
+        Read({
           id: new Date() * 1,
           timeRead: values.timeRead,
           nameAuthor: values.nameAuthor,
@@ -51,30 +67,15 @@ import { withRouter } from 'react-router-dom'
     })
   };
 
-  uploadImg = () => {
-    const { bookEdit } = this.state
-    let imageList = []
-    if(!!bookEdit) {
-      imageList =  bookEdit.imageCover.map(val => {
-        return {
-          uid: val.uid,
-          name: val.name,
-          status: val.status,
-          response: val.response,
-          url: val.response.url
-        }
-      })
-    }
+  uploadImg = (e) => {
     return {
-      multiple: false,
       action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
       onChange({ file, fileList }) {
         if (file.status !== 'uploading') {
           console.log(file, fileList);
         }
       },
-      defaultFileList: [
-      ]
+      defaultFileList:  e ? e.imageCover : [] 
       ,
       showUploadList: {
         showDownloadIcon: true,
@@ -87,6 +88,7 @@ import { withRouter } from 'react-router-dom'
     const { getFieldDecorator } = this.props.form
     const { status, history, book } = this.props
     const { bookEdit } = this.state
+
     if(status) {
       history.push('/book-read')
     }
@@ -144,15 +146,16 @@ import { withRouter } from 'react-router-dom'
                   <Input placeholder=" ระยะเวลาที่ให้ในการอ่าน(วัน)" type="number"/>
                 )}
               </Form.Item>
-  
               <Form.Item
                 name="imageCover"
                 label="ภาพหน้าปก"
               >
-                {getFieldDecorator('imageCover', {
+                {this.state.bookEdit !== null &&
+                getFieldDecorator('imageCover', {
                   rules: [{ required: true, message: 'Please input your time image cover!' }],
+                  initialValue: bookEdit ? bookEdit.imageCover: null,
                 })(
-                <Upload {...this.uploadImg()}>
+                <Upload {...this.uploadImg(this.state.bookEdit)}>
                   <Button>
                     Upload
                   </Button>
@@ -178,6 +181,7 @@ import { withRouter } from 'react-router-dom'
 
 const mapDispatchToProps = (dispatch) => ({
   Read : param => dispatch(BookReadAsync(param)),
+  Update : param => dispatch(BookReadUpdateAsync(param)),
 })
 
 const mapStateToProps = (state) => {

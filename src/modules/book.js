@@ -2,6 +2,7 @@ export const BOOKREAD_REQUESTED = 'book/newBookRead'
 export const BOOKREAD_SAVE = 'book/newBookSave'
 export const BOOKREAD_LIST = 'book/BookList'
 export const BOOKREAD_DELETE = 'book/BookDelete'
+export const BOOKREAD_UPDATE = 'book/BookUpdate'
 
 const initialState = {
     list: [],
@@ -31,6 +32,15 @@ export default (state = initialState, action) => {
         loading: false,
         status:true
       }
+
+    case BOOKREAD_UPDATE:
+      return {
+        ...state,
+        list: action.data,
+        loading: false,
+        status:true
+      }
+
 
     case BOOKREAD_DELETE:
     return {
@@ -81,4 +91,19 @@ export const BookDelete = (param) => {
         data: param
       })
     }
+}
+
+export const BookReadUpdateAsync = (param) => {
+  return dispatch => {
+    dispatch({
+      type: BOOKREAD_REQUESTED,
+    })
+
+    return setTimeout(() => {
+      dispatch({
+        type: BOOKREAD_UPDATE,
+        data: param
+      })
+    }, 3000)
   }
+}
